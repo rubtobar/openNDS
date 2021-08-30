@@ -3,3 +3,4 @@
 /dist
 /docs/build
 *.o
+node_modules/
