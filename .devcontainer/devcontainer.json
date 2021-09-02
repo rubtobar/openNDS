@@ -13,7 +13,7 @@
 
 
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": ["rangav.vscode-thunder-client","brapifra.phpserver"],
+	"extensions": ["rangav.vscode-thunder-client","brapifra.phpserver", "bmewburn.vscode-intelephense-client"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
