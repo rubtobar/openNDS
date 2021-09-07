@@ -4,3 +4,4 @@
 /docs/build
 *.o
 node_modules/
+forward_authentication_service/pages/tailwind.css

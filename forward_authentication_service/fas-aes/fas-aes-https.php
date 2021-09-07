@@ -363,18 +363,67 @@ function authenticate_page()
 		file_put_contents("$logfile", "$log");
 	}
 
-	echo "Waiting for link to establish....<br>";
+	//echo "Waiting for link to establish....<br>";
 	flush();
 	$count = 0;
 	$maxcount = 30;
 
+?>
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="../pages/tailwind.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div wire:loading class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center">
+			<div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+			<h2 class="text-center text-white text-xl font-semibold">Conectando...</h2>
+			<p class="w-1/3 text-center text-white">Conectando con el servidor, por favor no cierres la página.</p>
+		</div>
+	</body>
+
+	<style>
+		.loader {
+			border-top-color: #3498db;
+			-webkit-animation: spinner 1.5s linear infinite;
+			animation: spinner 1.5s linear infinite;
+		}
+
+		@-webkit-keyframes spinner {
+			0% {
+				-webkit-transform: rotate(0deg);
+			}
+
+			100% {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+
+		@keyframes spinner {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+	
+
+	<?php
+	flush();
+
 	for ($i = 1; $i <= $maxcount; $i++) {
 		$count++;
 		sleep(1);
-		echo "<b style=\"color:red;\">*</b>";
+		//echo "<b style=\"color:red;\">*</b>";
 
 		if ($count == 10) {
-			echo "<br>";
+			//echo "<br>";
 			$count = 0;
 		}
 
@@ -439,38 +488,79 @@ function thankyou_page()
 	$fullname_url = rawurlencode($fullname);
 	$auth = "yes";
 
-?>
-	<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
-		<div class="mt-8">
-			<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Conectar">
-			</input>
+	?>
+	<!doctype html>
+	<html>
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="../pages/tailwind.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div class="h-16"></div>
+		<div class="flex max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-4xl">
+			<div class="hidden bg-cover lg:block lg:w-1/2" style="background-image:url('https://images.unsplash.com/photo-1606660265514-358ebbadc80d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1575&q=80')">
+			</div>
+
+			<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
+				<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">WSECURITY</h2>
+
+				<p class="text-xl text-center text-gray-600 dark:text-gray-200">Login correcto</p>
+
+				<div>
+					<img class="object-scale-down h-48 w-full" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Yes_Check_Circle.svg/2048px-Yes_Check_Circle.svg.png">
+				</div>
+
+				<?php
+				echo "<form action=\"$me\" method=\"get\">";
+				echo "<input type=\"hidden\" name=\"fas\" value=\"$fas\">";
+				echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
+				echo "<input type=\"hidden\" name=\"auth\" value=\"$auth\">";
+				echo "<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">";
+				echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
+				?>
+
+
+
+
+				<div class="mt-8">
+					<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Cerrar y empezar a nevegar">
+					</input>
+				</div>
+				</form>
+			</div>
 		</div>
-	</div>
+	</body>
+
+	</html>
+
 
 	<?php
+	//	echo "
+	//		<big-red>
+	//			Thankyou!
+	//		</big-red>
+	//		<br>
+	//		<b>Welcome $fullname</b>
+	//		<br>
+	//		<italic-black>
+	//			Your News or Advertising could be here, contact the owners of this Hotspot to find out how!
+	//		</italic-black>
+	//		<form action=\"$me\" method=\"get\">
+	//			<input type=\"hidden\" name=\"fas\" value=\"$fas\">
+	//			<input type=\"hidden\" name=\"iv\" value=\"$iv\">
+	//			<input type=\"hidden\" name=\"auth\" value=\"$auth\">
+	//			<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">
+	//			<input type=\"hidden\" name=\"email\" value=\"$email\">
+	//			<input type=\"submit\" value=\"Continue\" >
+	//		</form>
+	//		<hr>
+	//	";
 
-	echo "
-		<big-red>
-			Thankyou!
-		</big-red>
-		<br>
-		<b>Welcome $fullname</b>
-		<br>
-		<italic-black>
-			Your News or Advertising could be here, contact the owners of this Hotspot to find out how!
-		</italic-black>
-		<form action=\"$me\" method=\"get\">
-			<input type=\"hidden\" name=\"fas\" value=\"$fas\">
-			<input type=\"hidden\" name=\"iv\" value=\"$iv\">
-			<input type=\"hidden\" name=\"auth\" value=\"$auth\">
-			<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">
-			<input type=\"hidden\" name=\"email\" value=\"$email\">
-			<input type=\"submit\" value=\"Continue\" >
-		</form>
-		<hr>
-	";
-
-	read_terms();
+	//read_terms();
 	flush();
 }
 
