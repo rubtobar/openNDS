@@ -363,22 +363,124 @@ function authenticate_page()
 		file_put_contents("$logfile", "$log");
 	}
 
-	//echo "Waiting for link to establish....<br>";
 	flush();
 	$count = 0;
-	$maxcount = 30;
+	$maxcount = 5;
+
+
+	loading_page();
+
+	for ($i = 1; $i <= $maxcount; $i++) {
+
+		sleep(1);
+
+		if (file_exists("$logfile")) {
+			$authed = "no";
+		} else {
+			//no list so must be authed
+			$authed = "yes";
+			write_log();
+		}
+
+		if ($authed == "yes") {
+			echo "<br><b>Authenticated</b><br>";
+			landing_page();
+			flush();
+			break;
+		}
+	}
+
+	if ($i > $maxcount) {
+		flush();
+		unlink("$logfile");
 
 ?>
+		<!DOCTYPE html>
+		<html>
+
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+			<title>Timeout</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		</head>
+
+		<body>
+			<style>
+				.aesconder {
+					visibility: hidden;
+				}
+			</style>
+			<div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+				<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+					<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+					<span class="hidden inline-block align-middle h-screen" aria-hidden="true">​</span>
+					<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 align-middle max-w-lg w-full">
+						<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+							<div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:h-16 sm:w-16">
+								<svg class="h-12 w-12 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+								</svg>
+							</div>
+							<div class="mt-3 text-center sm:mt-0">
+								<h3 class="text-2xl leading-6 font-medium text-gray-900 pt-3" id="modal-title">
+									El Portal ha expirado
+								</h3>
+								<div class="mt-2">
+									<p class="text-sm text-gray-500">
+										Es posible que tenga que apagar y encender su WiFi para volver a conectarse.
+										<br>
+										Pulse continuar para volver a cargar.
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+							<button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-500 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+								Continuar
+							</button>
+							<!--<button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+								Cancelar
+							</button>-->
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</body>
+
+		</html>
+	<?php
+
+
+
+
+		// echo "
+		// 	<br>The Portal has timed out<br>You may have to turn your WiFi off and on to reconnect.<br>
+		// 	<p>
+		// 	Click or tap Continue to try again.
+		// 	</p>
+		// 	<form>
+		// 		<input type=\"button\" VALUE=\"Continue\" onClick=\"location.href='" . $redir . "'\" >
+		// 	</form>
+		// ";
+	}
+}
+
+function loading_page()
+{
+	?>
 
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link href="../pages/tailwind.css" rel="stylesheet">
+		<!--<link href="../pages/tailwind.css" rel="stylesheet">-->
 
 	</head>
 
 	<body>
-		<div wire:loading class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center">
+		<div wire:loading class="aesconder fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center">
 			<div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
 			<h2 class="text-center text-white text-xl font-semibold">Conectando...</h2>
 			<p class="w-1/3 text-center text-white">Conectando con el servidor, por favor no cierres la página.</p>
@@ -386,7 +488,9 @@ function authenticate_page()
 	</body>
 
 	<style>
-		.loader {
+		<?php
+		echo file_get_contents('../pages/tailwind.css'); //añadimos el css directamente sobre el DOM
+		?>.loader {
 			border-top-color: #3498db;
 			-webkit-animation: spinner 1.5s linear infinite;
 			animation: spinner 1.5s linear infinite;
@@ -412,51 +516,10 @@ function authenticate_page()
 			}
 		}
 	</style>
-	
 
-	<?php
+
+<?php
 	flush();
-
-	for ($i = 1; $i <= $maxcount; $i++) {
-		$count++;
-		sleep(1);
-		//echo "<b style=\"color:red;\">*</b>";
-
-		if ($count == 10) {
-			//echo "<br>";
-			$count = 0;
-		}
-
-		flush();
-
-		if (file_exists("$logfile")) {
-			$authed = "no";
-		} else {
-			//no list so must be authed
-			$authed = "yes";
-			write_log();
-		}
-
-		if ($authed == "yes") {
-			echo "<br><b>Authenticated</b><br>";
-			landing_page();
-			flush();
-			break;
-		}
-	}
-
-	if ($i > $maxcount) {
-		unlink("$logfile");
-		echo "
-			<br>The Portal has timed out<br>You may have to turn your WiFi off and on to reconnect.<br>
-			<p>
-			Click or tap Continue to try again.
-			</p>
-			<form>
-				<input type=\"button\" VALUE=\"Continue\" onClick=\"location.href='" . $redir . "'\" >
-			</form>
-		";
-	}
 }
 
 function thankyou_page()
@@ -488,7 +551,7 @@ function thankyou_page()
 	$fullname_url = rawurlencode($fullname);
 	$auth = "yes";
 
-	?>
+?>
 	<!doctype html>
 	<html>
 
@@ -511,7 +574,15 @@ function thankyou_page()
 				<p class="text-xl text-center text-gray-600 dark:text-gray-200">Login correcto</p>
 
 				<div>
-					<img class="object-scale-down h-48 w-full" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Yes_Check_Circle.svg/2048px-Yes_Check_Circle.svg.png">
+					<!-- <img class="object-scale-down h-48 w-full" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Yes_Check_Circle.svg/2048px-Yes_Check_Circle.svg.png"> -->
+					<svg class="text-green-600">
+							<path d="M9.917,0.875c-5.086,0-9.208,4.123-9.208,9.208c0,5.086,4.123,9.208,9.208,9.208s9.208-4.122,9.208-9.208
+								C19.125,4.998,15.003,0.875,9.917,0.875z M9.917,18.141c-4.451,0-8.058-3.607-8.058-8.058s3.607-8.057,8.058-8.057
+								c4.449,0,8.057,3.607,8.057,8.057S14.366,18.141,9.917,18.141z M13.851,6.794l-5.373,5.372L5.984,9.672
+								c-0.219-0.219-0.575-0.219-0.795,0c-0.219,0.22-0.219,0.575,0,0.794l2.823,2.823c0.02,0.028,0.031,0.059,0.055,0.083
+								c0.113,0.113,0.263,0.166,0.411,0.162c0.148,0.004,0.298-0.049,0.411-0.162c0.024-0.024,0.036-0.055,0.055-0.083l5.701-5.7
+								c0.219-0.219,0.219-0.575,0-0.794C14.425,6.575,14.069,6.575,13.851,6.794z"></path>
+						</svg>
 				</div>
 
 				<?php
@@ -523,11 +594,8 @@ function thankyou_page()
 				echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
 				?>
 
-
-
-
 				<div class="mt-8">
-					<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Cerrar y empezar a nevegar">
+					<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Conectar">
 					</input>
 				</div>
 				</form>
@@ -775,7 +843,7 @@ function login_page()
 					</div>
 
 					<div class="mt-8">
-						<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Conectar">
+						<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Log in">
 						</input>
 					</div>
 					</form>
