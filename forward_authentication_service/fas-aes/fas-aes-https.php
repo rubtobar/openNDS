@@ -300,22 +300,17 @@ if (!file_exists("$logpath" . "$gwname")) {
 if (isset($_GET["terms"])) {
 	// ToS requested
 	display_terms();
-	//footer();
 } elseif (isset($_GET["status"])) {
 	// The status page is triggered by a client if already authenticated by openNDS (eg by clicking "back" on their browser)
 	status_page();
-	//footer();
 } elseif (isset($_GET["auth"])) {
 	# Verification is complete so now wait for openNDS to authenticate the client.
 	authenticate_page();
-	//footer();
 } elseif (isset($_GET["landing"])) {
 	// The landing page is served to the client immediately after openNDS authentication, but many CPDs will immediately close
 	landing_page();
-	//footer();
 } else {
 	login_page();
-	//footer();
 }
 
 #############################################################################################################
@@ -382,8 +377,9 @@ function authenticate_page()
 			write_log();
 		}
 
-		if ($authed == "yes") {
-			echo "<br><b>Authenticated</b><br>";
+		//if ($authed == "yes") {
+		if ("yes" == "yes") {
+			//echo "<br><b>Authenticated</b><br>";
 			landing_page();
 			flush();
 			break;
@@ -559,7 +555,6 @@ function thankyou_page()
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="../pages/tailwind.css" rel="stylesheet">
-
 	</head>
 
 	<body>
@@ -569,21 +564,17 @@ function thankyou_page()
 			</div>
 
 			<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
+				<div>
+					<svg class="text-green-600" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</div>
+
 				<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">WSECURITY</h2>
 
 				<p class="text-xl text-center text-gray-600 dark:text-gray-200">Login correcto</p>
 
-				<div>
-					<!-- <img class="object-scale-down h-48 w-full" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Yes_Check_Circle.svg/2048px-Yes_Check_Circle.svg.png"> -->
-					<svg class="text-green-600">
-							<path d="M9.917,0.875c-5.086,0-9.208,4.123-9.208,9.208c0,5.086,4.123,9.208,9.208,9.208s9.208-4.122,9.208-9.208
-								C19.125,4.998,15.003,0.875,9.917,0.875z M9.917,18.141c-4.451,0-8.058-3.607-8.058-8.058s3.607-8.057,8.058-8.057
-								c4.449,0,8.057,3.607,8.057,8.057S14.366,18.141,9.917,18.141z M13.851,6.794l-5.373,5.372L5.984,9.672
-								c-0.219-0.219-0.575-0.219-0.795,0c-0.219,0.22-0.219,0.575,0,0.794l2.823,2.823c0.02,0.028,0.031,0.059,0.055,0.083
-								c0.113,0.113,0.263,0.166,0.411,0.162c0.148,0.004,0.298-0.049,0.411-0.162c0.024-0.024,0.036-0.055,0.055-0.083l5.701-5.7
-								c0.219-0.219,0.219-0.575,0-0.794C14.425,6.575,14.069,6.575,13.851,6.794z"></path>
-						</svg>
-				</div>
+
 
 				<?php
 				echo "<form action=\"$me\" method=\"get\">";
@@ -735,10 +726,12 @@ function login_page()
 		<body>
 			<div class="h-16"></div>
 			<div class="flex max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-4xl">
-				<div class="hidden bg-cover lg:block lg:w-1/2" style="background-image:url('https://images.unsplash.com/photo-1606660265514-358ebbadc80d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1575&q=80')">
-				</div>
 
-				<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
+				<!-- Lado izquierdo del cuadro -->
+				<div class="hidden bg-cover lg:block lg:w-1/2" style="background-image:url('https://images.unsplash.com/photo-1606660265514-358ebbadc80d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1575&q=80')"></div>
+
+				<!-- Lado derecho del cuadro -->
+				<div class="w-full px-6 py-20 md:px-8 lg:w-1/2">
 					<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">WSECURITY</h2>
 
 					<p class="text-xl text-center text-gray-600 dark:text-gray-200">Estas conectado a
@@ -747,7 +740,7 @@ function login_page()
 					<?php
 					if (!isset($_GET['fas'])) {
 					?>
-						<p class="text-xl text-center text-gray-600 dark:text-gray-200">ERROR! Incomplete data passed from NDS</p>
+						<p class="text-xl text-center text-red-600 dark:text-red-200">ERROR! Incomplete data passed from NDS</p>
 					<?php
 					}
 					?>
@@ -765,6 +758,13 @@ function login_page()
 						<span class="w-5/6 px-4 py-3 font-bold text-center">Sign in with Google</span>
 					</a>
 
+
+
+
+
+
+
+
 					<div class="flex items-center justify-between mt-4">
 						<span class="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
 
@@ -773,86 +773,109 @@ function login_page()
 
 						<span class="w-1/5 border-b dark:border-gray-400 lg:w-1/4"></span>
 					</div>
+
+
+
+
 					<?php
 					echo "<form action=\"$me\" method=\"get\" >";
 					echo "<input type=\"hidden\" name=\"fas\" value=\"$fas\">";
 					echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
 					?>
 
+					<div class="flex flex-col">
 
-
-
-					<div class="mt-4">
-						<label class="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200" for="LoggingEmailAddress">Nombre</label>
-						<?php
-						echo "<input type=\"text\" name=\"fullname\" value=\"$fullname\"";
-						?>
-						class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800
-						dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500
-						focus:outline-none focus:ring">
-						<?php
-						if (isset($_GET["fullname"]) and empty($fullname)) {
-						?>
-							<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
-								Falta introducir nombre de usuario
-							</span>
-						<?php
-						}
-						?>
-					</div>
-
-					<div class="mt-4">
-						<div class="flex justify-between">
-							<label class="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200" for="loggingPassword">Correo electrónico</label>
+						<div class="mt-8">
+							<label class="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200" for="LoggingEmailAddress">Nombre</label>
+							<?php
+							echo "<input type=\"text\" name=\"fullname\" value=\"$fullname\" ";
+							?>
+							placeholder="John Doe" class="block w-full px-4 py-2 text-gray-700 bg-white
+							border rounded-md dark:bg-gray-800
+							dark:text-gray-300
+							focus:outline-none focus:ring
+							<?php
+							if (isset($_GET["fullname"]) and empty($fullname)) {
+								echo " border-red-300\"> "; //cambia el color del borde del imput en caso de que este incorrecto
+							?>
+								<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+									Falta introducir nombre de usuario
+								</span>
+							<?php
+							} else {
+								echo " border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 \"> ";
+							}
+							?>
 						</div>
-						<?php
-						echo "<input type=\"email\" name=\"email\" value=\"$email\"";
-						?>
-						class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800
-						dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500
-						focus:outline-none focus:ring"
-						>
 
-						<?php
-						if (isset($_GET["email"]) and empty($email)) {
-						?>
-							<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
-								Falta introducir correo electrónico
-							</span>
-						<?php
-						}
-						?>
+						<div class="mt-8">
+
+							<label class="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200" for="loggingPassword">Correo electrónico</label>
+							<?php
+							echo "<input type=\"email\" name=\"email\" value=\"$email\" ";
+							?>
+							placeholder="john@ejemplo.com" class="block w-full px-4 py-2 text-gray-700 bg-white
+							border rounded-md dark:bg-gray-800
+							dark:text-gray-300 focus:outline-none focus:ring
+
+							<?php
+							if (isset($_GET["email"]) and empty($email)) {
+								echo " border-red-300\"> "; //cambia el color del borde del imput en caso de que este incorrecto
+							?>
+
+
+								<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+									Falta introducir correo electrónico
+								</span>
+							<?php
+							} else {
+								echo " border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 \"> "; //mantiene el color actual
+							}
+							?>
+						</div>
+
+						<div class="mt-8">
+
+							<label class="inline-flex items-center">
+								<input type='hidden' name='acceptterms' value="false">
+								<input type="checkbox" name="acceptterms" value="true" class="h-5 w-5">
+								<span class="ml-2">Aceptar
+
+									<?php
+									$me = $_SERVER['SCRIPT_NAME'];
+									$fas = $GLOBALS["fas"];
+									$iv = $GLOBALS["iv"];
+									echo "<a href=\"" . $me . "?fas=" . $fas . "&iv=" . $iv . "&terms=yes" . "\"  class=\"underline\">términos y condiciones</a>";
+									?>
+								</span>
+
+							</label>
+							<?php
+							if ($acceptterms == "false") {
+							?>
+								<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
+									Es obligatorio aceptar los términos y condiciones
+								</span>
+							<?php
+							}
+							?>
+						</div>
+
+
+						<div class="mt-8 justify-items-end">
+							<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Log in">
+							</input>
+						</div>
+
 					</div>
 
-					<div class="mt-8">
-
-						<label class="inline-flex items-center">
-							<input type='hidden' name='acceptterms' value="false">
-							<input type="checkbox" name="acceptterms" value="true">
-							<span class="ml-2">Aceptar <a href='#' class="underline">términos y condiciones</a></span>
-						</label>
-						<?php
-						if ($acceptterms == "false") {
-						?>
-							<span class="flex items-center font-medium tracking-wide text-red-500 text-xs mt-1 ml-1">
-								Es obligatorio aceptar los términos y condiciones
-							</span>
-						<?php
-						}
-						?>
-					</div>
-
-					<div class="mt-8">
-						<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Log in">
-						</input>
-					</div>
 					</form>
 				</div>
 			</div>
 		</body>
 
 		</html>
-<?php
+	<?php
 
 	} else {
 		thankyou_page();
@@ -915,7 +938,65 @@ function landing_page()
 	$email = $_GET["email"];
 	$redir = rawurldecode($originurl);
 
-	echo "
+
+
+	?>
+	<!DOCTYPE html>
+	<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Acceso</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	</head>
+
+	<body>
+		<style>
+			.aesconder {
+				visibility: hidden;
+			}
+		</style>
+		<div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+			<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+				<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+				<span class="hidden inline-block align-middle h-screen" aria-hidden="true">​</span>
+				<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 align-middle max-w-lg w-full">
+					<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+						<div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:h-16 sm:w-16">
+							<svg class="h-12 w-12 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<div class="mt-3 text-center sm:mt-0">
+							<h3 class="text-2xl leading-6 font-medium text-gray-900 pt-3" id="modal-title">
+								Acceso a internet concedido
+							</h3>
+							<div class="mt-2">
+								<p class="text-sm text-gray-500">
+									Ya puedes utilizar la aplicaciones con acceso a internet de forma habitual. Presiona continuar para cerrar la página.
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+						<form>
+							<?php
+							echo "<input type=\"button\" VALUE=\"Continuar\" onClick=\"location.href='" . $redir . "'\" ";
+							?>
+							class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</body>
+
+	</html>
+<?php
+	/* echo "
 		<p>
 			<big-red>
 				You are now logged in and have been granted access to the Internet.
@@ -937,9 +1018,8 @@ function landing_page()
 			<input type=\"button\" VALUE=\"Continue\" onClick=\"location.href='" . $redir . "'\" >
 		</form>
 		<hr>
-	";
+	"; */
 
-	read_terms();
 	flush();
 }
 
@@ -1016,176 +1096,59 @@ function read_terms()
 
 function display_terms()
 {
-	# This is the all important "Terms of service"
-	# Edit this long winded generic version to suit your requirements.
-	####
-	# WARNING #
-	# It is your responsibility to ensure these "Terms of Service" are compliant with the REGULATIONS and LAWS of your Country or State.
-	# In most locations, a Privacy Statement is an essential part of the Terms of Service.
-	####
+?>
 
-	#Privacy
-	echo "
-		<b style=\"color:red;\">Privacy.</b><br>
-		<b>
-			By logging in to the system, you grant your permission for this system to store any data you provide for
-			the purposes of logging in, along with the networking parameters of your device that the system requires to function.<br>
-			All information is stored for your convenience and for the protection of both yourself and us.<br>
-			All information collected by this system is stored in a secure manner and is not accessible by third parties.<br>
-			In return, we grant you FREE Internet access.
-		</b><hr>
-	";
-	flush();
+	<!doctype html>
+	<html>
 
-	# Terms of Service
-	echo "
-		<b style=\"color:red;\">Terms of Service for this Hotspot.</b> <br>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="../pages/tailwind.css" rel="stylesheet">
 
-		<b>Access is granted on a basis of trust that you will NOT misuse or abuse that access in any way.</b><hr>
+	</head>
 
-		<b>Please scroll down to read the Terms of Service in full or click the Continue button to return to the Acceptance Page</b>
+	<body>
+		<footer class="text-gray-600 body-font">
+			<div class="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+				<a class="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+					</svg>
+					<span class="ml-3 text-xl">Wsecurity</span>
+				</a>
+				<p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2020 Wsecurity —
+					<a href="mailto:wsecurity@wsecurity.com" class="text-gray-600 ml-1" rel="noopener noreferrer" target="_blank">wsecurity@wsecurity.com</a>
+				</p>
+				<!-- <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
+					<a class="text-gray-500">
+						<svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+							<path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+						</svg>
+					</a>
+					<a class="ml-3 text-gray-500">
+						<svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+							<path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+						</svg>
+					</a>
+					<a class="ml-3 text-gray-500">
+						<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+							<rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+							<path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+						</svg>
+					</a>
+					<a class="ml-3 text-gray-500">
+						<svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+							<path stroke="none" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+							<circle cx="4" cy="4" r="2" stroke="none"></circle>
+						</svg>
+					</a>
+				</span> -->
+			</div>
+		</footer>
+	</body>
 
-		<form>
-			<input type=\"button\" VALUE=\"Continue\" onClick=\"history.go(-1);return true;\">
-		</form>
-	";
-	flush();
-
-	# Proper Use
-	echo "
-		<hr>
-		<b>Proper Use</b>
-
-		<p>
-			This Hotspot provides a wireless network that allows you to connect to the Internet. <br>
-			<b>Use of this Internet connection is provided in return for your FULL acceptance of these Terms Of Service.</b>
-		</p>
-
-		<p>
-			<b>You agree</b> that you are responsible for providing security measures that are suited for your intended use of the Service.
-			For example, you shall take full responsibility for taking adequate measures to safeguard your data from loss.
-		</p>
-
-		<p>
-			While the Hotspot uses commercially reasonable efforts to provide a secure service,
-			the effectiveness of those efforts cannot be guaranteed.
-		</p>
-
-		<p>
-			<b>You may</b> use the technology provided to you by this Hotspot for the sole purpose
-			of using the Service as described here.
-			You must immediately notify the Owner of any unauthorized use of the Service or any other security breach.<br><br>
-			We will give you an IP address each time you access the Hotspot, and it may change.
-			<br>
-			<b>You shall not</b> program any other IP or MAC address into your device that accesses the Hotspot.
-			You may not use the Service for any other reason, including reselling any aspect of the Service.
-			Other examples of improper activities include, without limitation:
-		</p>
-
-			<ol>
-				<li>
-					downloading or uploading such large volumes of data that the performance of the Service becomes
-					noticeably degraded for other users for a significant period;
-				</li>
-
-				<li>
-					attempting to break security, access, tamper with or use any unauthorized areas of the Service;
-				</li>
-
-				<li>
-					removing any copyright, trademark or other proprietary rights notices contained in or on the Service;
-				</li>
-
-				<li>
-					attempting to collect or maintain any information about other users of the Service
-					(including usernames and/or email addresses) or other third parties for unauthorized purposes;
-				</li>
-
-				<li>
-					logging onto the Service under false or fraudulent pretenses;
-				</li>
-
-				<li>
-					creating or transmitting unwanted electronic communications such as SPAM or chain letters to other users
-					or otherwise interfering with other user's enjoyment of the service;
-				</li>
-
-				<li>
-					transmitting any viruses, worms, defects, Trojan Horses or other items of a destructive nature; or
-				</li>
-
-				<li>
-					using the Service for any unlawful, harassing, abusive, criminal or fraudulent purpose.
-				</li>
-			</ol>
-	";
-	flush();
-
-	# Content Disclaimer
-	echo "
-		<hr>
-		<b>Content Disclaimer</b>
-
-		<p>
-			The Hotspot Owners do not control and are not responsible for data, content, services, or products
-			that are accessed or downloaded through the Service.
-			The Owners may, but are not obliged to, block data transmissions to protect the Owner and the Public.
-		</p>
-
-		The Owners, their suppliers and their licensors expressly disclaim to the fullest extent permitted by law,
-		all express, implied, and statutary warranties, including, without limitation, the warranties of merchantability
-		or fitness for a particular purpose.
-		<br><br>
-		The Owners, their suppliers and their licensors expressly disclaim to the fullest extent permitted by law
-		any liability for infringement of proprietory rights and/or infringement of Copyright by any user of the system.
-		Login details and device identities may be stored and be used as evidence in a Court of Law against such users.
-		<br>
-	";
-	flush();
-
-	# Limitation of Liability
-	echo "
-
-		<hr><b>Limitation of Liability</b>
-
-		<p>
-			Under no circumstances shall the Owners, their suppliers or their licensors be liable to any user or
-			any third party on account of that party's use or misuse of or reliance on the Service.
-		</p>
-
-		<hr><b>Changes to Terms of Service and Termination</b>
-
-		<p>
-			We may modify or terminate the Service and these Terms of Service and any accompanying policies,
-			for any reason, and without notice, including the right to terminate with or without notice,
-			without liability to you, any user or any third party. Please review these Terms of Service
-			from time to time so that you will be apprised of any changes.
-		</p>
-
-		<p>
-			We reserve the right to terminate your use of the Service, for any reason, and without notice.
-			Upon any such termination, any and all rights granted to you by this Hotspot Owner shall terminate.
-		</p>
-	";
-	flush();
-
-	# Inemnity
-	echo "
-		<hr><b>Indemnity</b>
-
-		<p>
-			<b>You agree</b> to hold harmless and indemnify the Owners of this Hotspot,
-			their suppliers and licensors from and against any third party claim arising from
-			or in any way related to your use of the Service, including any liability or expense arising from all claims,
-			losses, damages (actual and consequential), suits, judgments, litigation costs and legal fees, of every kind and nature.
-		</p>
-
-		<hr>
-		<form>
-			<input type=\"button\" VALUE=\"Continue\" onClick=\"history.go(-1);return true;\">
-		</form>
-	";
-	flush();
+<?php
 }
 
 ?>
