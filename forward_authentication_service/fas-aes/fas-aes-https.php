@@ -555,6 +555,7 @@ function thankyou_page()
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="../pages/tailwind.css" rel="stylesheet">
+		<title>Login correcto</title>
 	</head>
 
 	<body>
@@ -598,6 +599,87 @@ function thankyou_page()
 
 
 	<?php
+
+
+
+	# El login ha sido correcto, guardamos al usuario en la bbdd
+	$con = new mysqli("172.17.0.4", "root", "pw", "registrations");
+
+	/* 
+CREATE TABLE `users` (
+`id` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`username` VARCHAR( 32 ) NOT NULL ,
+`password` VARCHAR( 60 ) NOT NULL ,
+`email` TEXT NOT NULL ,
+`hash` VARCHAR( 32 ) NOT NULL ,
+`active` INT( 1 ) NOT NULL DEFAULT '0'
+) ENGINE = MYISAM ; 
+		*/
+
+
+	if ($con->connect_errno) {
+
+		echo "connection failed: %s\n" . $con->connect_error;
+		exit();
+	}
+
+	echo "connection OK:\n";
+
+	# creamos el usuario y su hash
+	$hash = md5(rand(0, 1000));
+	$password = rand(1000, 5000); // Generate random number between 1000 and 5000 and assign it to a local variable.
+
+
+	$res = $con->query("INSERT INTO users (username, password, email, hash) VALUES(
+		'" . mysqli_escape_string($con, $fullname) . "', 
+		'" . mysqli_escape_string($con, password_hash($password, PASSWORD_DEFAULT)) . "', 
+		'" . mysqli_escape_string($con, $email) . "', 
+		'" . mysqli_escape_string($con, $hash) . "') ");
+
+	echo "INSERT INTO users (username, password, email, hash) VALUES(
+		'" . mysqli_escape_string($con, $fullname) . "', 
+		'" . mysqli_escape_string($con, password_hash($password, PASSWORD_DEFAULT)) . "', 
+		'" . mysqli_escape_string($con, $email) . "', 
+		'" . mysqli_escape_string($con, $hash) . "') ";
+
+	if ($res == 1) {
+		echo $res . " CORRECTO INSERT";
+	} else {
+		echo "ERROR INSERT";
+	}
+
+	$res->close();
+	$con->close();
+
+	// Enviamos codigo de verificación
+
+	$to      = $email; // Send email to our user
+	$subject = 'Signup | Verification'; // Give the email a subject 
+	$message = '
+  
+	Thanks for signing up!
+	Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+	
+	------------------------
+	Username: ' . $fullname . '
+	Password: ' . $password . '
+	------------------------
+	
+	Please click this link to activate your account:
+	http://localhost:3000/fas-aes/fas-aes-https.php?email=' . $email . '&hash=' . $hash . '
+	'; // Our message above including the link
+
+	$headers = 'From:noreply@localhost' . "\r\n"; // Set from headers
+
+	if(mail($to, $subject, $message, $headers)){ // Send our email
+		echo "enviado";
+	
+	}else {
+		echo "no enviado";
+	}
+	echo 'Your account has been made, <br /> please verify it by clicking the activation link that has been send to your email.';
+
+
 	//	echo "
 	//		<big-red>
 	//			Thankyou!
@@ -720,7 +802,7 @@ function login_page()
 			<meta charset="UTF-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			<link href="../pages/tailwind.css" rel="stylesheet">
-
+			<title>Logging</title>
 		</head>
 
 		<body>
@@ -946,7 +1028,7 @@ function landing_page()
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Acceso</title>
+		<title>Acceso concedido</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	</head>
@@ -1023,7 +1105,7 @@ function landing_page()
 	flush();
 }
 
-function splash_header()
+/* function splash_header()
 {
 	$imagepath = $GLOBALS["imagepath"];
 	$gatewayname = $GLOBALS["gatewayname"];
@@ -1054,9 +1136,9 @@ function splash_header()
 		<div class=\"insert\">
 	";
 	flush();
-}
+} */
 
-function footer()
+/* function footer()
 {
 	$imagepath = $GLOBALS["imagepath"];
 	$version = $GLOBALS["version"];
@@ -1075,9 +1157,9 @@ function footer()
 		</html>
 	";
 	exit(0);
-}
+} */
 
-function read_terms()
+/* function read_terms()
 {
 	#terms of service button
 	$me = $_SERVER['SCRIPT_NAME'];
@@ -1092,7 +1174,7 @@ function read_terms()
 			<input type=\"submit\" value=\"Read Terms of Service\" >
 		</form>
 	";
-}
+} */
 
 function display_terms()
 {
@@ -1105,7 +1187,7 @@ function display_terms()
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="../pages/tailwind.css" rel="stylesheet">
-
+		<title>Terminos de servicio</title>
 	</head>
 
 	<body>
@@ -1150,5 +1232,46 @@ function display_terms()
 
 <?php
 }
+
+echo "ñielurbvñqeirvub"; # AQUI NO LLEGAMOS SE QUEDA LA LOGICA POR EL CAMINO
+
+# Verificación de que están entrando con el enlace del email
+if (isset($_GET['email']) && !empty($_GET['email']) and isset($_GET['hash']) && !empty($_GET['hash'])) {
+
+	echo "aiuwpbvpiWRUBVÑwrbv";
+
+	$con = new mysqli("172.17.0.4", "root", "pw", "registrations");
+
+	if ($con->connect_errno) {
+
+		echo "connection failed: %s\n" . $con->connect_error;
+		exit();
+	}
+
+
+	// Verify data
+	$email = mysqli_escape_string($con, $_GET['email']); // Set email variable
+	$hash = mysqli_escape_string($con, $_GET['hash']); // Set hash variable
+
+	$search = mysqli_query($con, "SELECT email, hash, active FROM users WHERE email='" . $email . "' AND hash='" . $hash . "' AND active='0'");
+	$match  = mysqli_num_rows($search);
+
+	echo $match; // Display how many matches have been found -> remove this when done with testing ;)
+
+	if ($match > 0) {
+		// We have a match, activate the account
+		mysqli_query($con, "UPDATE users SET active='1' WHERE email='" . $email . "' AND hash='" . $hash . "' AND active='0'");
+		echo '<div class="statusmsg">Your account has been activated, you can now login</div>';
+	} else {
+		// No match -> invalid url or account has already been activated.
+		echo '<div class="statusmsg">The url is either invalid or you already have activated your account.</div>';
+	}
+
+	$res->close();
+	$con->close();
+
+	flush();
+}
+flush();
 
 ?>

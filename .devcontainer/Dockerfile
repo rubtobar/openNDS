@@ -11,6 +11,7 @@ RUN apt-get update \
 && apt-get -y install --no-install-recommends \
 apache2 \
 php \
+php-mysql \
 nodejs \
 gcc \
 g++ \
