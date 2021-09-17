@@ -1,0 +1,1 @@
+lftp -u miregau,Mierda9595 -e "cd www/;put forward_authentication_service/fas-aes/fas-aes-https.php;mkdir pages/;cd pages/;put forward_authentication_service/pages/tailwind.css;quit" ftp.cluster030.hosting.ovh.net

@@ -1,4 +1,19 @@
 <?php
+
+/* $roots_includes = array(
+	'/functions/body-class.php',
+	'/functions/connections.php'
+  );
+  
+  foreach($roots_includes as $file){
+	if(!$filepath = locate_template($file)) {
+	  trigger_error("Error locating `$file` for inclusion!", E_USER_ERROR);
+	}
+  
+	require_once $filepath;
+  }
+  unset($file, $filepath); */
+
 /* (c) Blue Wave Projects and Services 2015-2021. This software is released under the GNU GPL license.
 
  This is a FAS script providing an example of remote Forward Authentication for openNDS (NDS) on an http web server supporting PHP.
@@ -60,12 +75,12 @@ if (ob_get_level()) {
 }
 
 //force redirect to secure page
-//if(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off"){
-//    $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-//    header('HTTP/1.1 301 Moved Permanently');
-//    header('Location: ' . $redirect);
-//    exit();
-//}
+if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off") {
+	$redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $redirect);
+	exit();
+}
 
 // setup some defaults
 date_default_timezone_set("UTC");
@@ -236,6 +251,8 @@ if (isset($_GET['status'])) {
 } else if (isset($_GET['fas'])) {
 	$fas = $_GET['fas'];
 	$iv = $_GET['iv'];
+}elseif (isset($_GET['frommail'])) {
+	# code...
 } else {
 	exit(0);
 }
@@ -448,19 +465,6 @@ function authenticate_page()
 
 		</html>
 	<?php
-
-
-
-
-		// echo "
-		// 	<br>The Portal has timed out<br>You may have to turn your WiFi off and on to reconnect.<br>
-		// 	<p>
-		// 	Click or tap Continue to try again.
-		// 	</p>
-		// 	<form>
-		// 		<input type=\"button\" VALUE=\"Continue\" onClick=\"location.href='" . $redir . "'\" >
-		// 	</form>
-		// ";
 	}
 }
 
@@ -603,7 +607,16 @@ function thankyou_page()
 
 
 	# El login ha sido correcto, guardamos al usuario en la bbdd
-	$con = new mysqli("172.17.0.4", "root", "pw", "registrations");
+	try {
+		// first connect to database with the PDO object. 
+		$con = new \PDO("mysql:host=miregau123.mysql.db;dbname=miregau123;charset=utf8", "miregau123", "Putabbdd1", [
+			PDO::ATTR_EMULATE_PREPARES => false,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		]);
+	} catch (\PDOException $e) {
+		// if connection fails, show PDO error. 
+		echo "Error connecting to mysql: " . $e->getMessage();
+	}
 
 	/* 
 CREATE TABLE `users` (
@@ -616,40 +629,16 @@ CREATE TABLE `users` (
 ) ENGINE = MYISAM ; 
 		*/
 
-
-	if ($con->connect_errno) {
-
-		echo "connection failed: %s\n" . $con->connect_error;
-		exit();
-	}
-
-	echo "connection OK:\n";
-
 	# creamos el usuario y su hash
 	$hash = md5(rand(0, 1000));
 	$password = rand(1000, 5000); // Generate random number between 1000 and 5000 and assign it to a local variable.
 
-
-	$res = $con->query("INSERT INTO users (username, password, email, hash) VALUES(
-		'" . mysqli_escape_string($con, $fullname) . "', 
-		'" . mysqli_escape_string($con, password_hash($password, PASSWORD_DEFAULT)) . "', 
-		'" . mysqli_escape_string($con, $email) . "', 
-		'" . mysqli_escape_string($con, $hash) . "') ");
-
-	echo "INSERT INTO users (username, password, email, hash) VALUES(
-		'" . mysqli_escape_string($con, $fullname) . "', 
-		'" . mysqli_escape_string($con, password_hash($password, PASSWORD_DEFAULT)) . "', 
-		'" . mysqli_escape_string($con, $email) . "', 
-		'" . mysqli_escape_string($con, $hash) . "') ";
-
-	if ($res == 1) {
-		echo $res . " CORRECTO INSERT";
-	} else {
-		echo "ERROR INSERT";
-	}
-
-	$res->close();
-	$con->close();
+	$sentencia = $con->prepare("INSERT INTO users (username, password, email, hash) VALUES (?, ?, ?, ?)");
+	$sentencia->bindParam(1, $fullname);
+	$sentencia->bindParam(2, password_hash($password, PASSWORD_DEFAULT));
+	$sentencia->bindParam(3, $email);
+	$sentencia->bindParam(4, $hash);
+	$sentencia->execute();
 
 	// Enviamos codigo de verificación
 
@@ -666,42 +655,17 @@ CREATE TABLE `users` (
 	------------------------
 	
 	Please click this link to activate your account:
-	http://localhost:3000/fas-aes/fas-aes-https.php?email=' . $email . '&hash=' . $hash . '
+	http://miregalooriginal.com/fas-aes-https.php?frommail&email=' . $email . '&hash=' . $hash . '
 	'; // Our message above including the link
 
-	$headers = 'From:noreply@localhost' . "\r\n"; // Set from headers
+	$headers = 'From:noreply@miregalooriginal.com' . "\r\n"; // Set from headers
 
-	if(mail($to, $subject, $message, $headers)){ // Send our email
+	if (mail($to, $subject, $message, $headers)) { // Send our email
 		echo "enviado";
-	
-	}else {
+	} else {
 		echo "no enviado";
 	}
-	echo 'Your account has been made, <br /> please verify it by clicking the activation link that has been send to your email.';
 
-
-	//	echo "
-	//		<big-red>
-	//			Thankyou!
-	//		</big-red>
-	//		<br>
-	//		<b>Welcome $fullname</b>
-	//		<br>
-	//		<italic-black>
-	//			Your News or Advertising could be here, contact the owners of this Hotspot to find out how!
-	//		</italic-black>
-	//		<form action=\"$me\" method=\"get\">
-	//			<input type=\"hidden\" name=\"fas\" value=\"$fas\">
-	//			<input type=\"hidden\" name=\"iv\" value=\"$iv\">
-	//			<input type=\"hidden\" name=\"auth\" value=\"$auth\">
-	//			<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">
-	//			<input type=\"hidden\" name=\"email\" value=\"$email\">
-	//			<input type=\"submit\" value=\"Continue\" >
-	//		</form>
-	//		<hr>
-	//	";
-
-	//read_terms();
 	flush();
 }
 
@@ -1233,10 +1197,21 @@ function display_terms()
 <?php
 }
 
-echo "ñielurbvñqeirvub"; # AQUI NO LLEGAMOS SE QUEDA LA LOGICA POR EL CAMINO
 
 # Verificación de que están entrando con el enlace del email
-if (isset($_GET['email']) && !empty($_GET['email']) and isset($_GET['hash']) && !empty($_GET['hash'])) {
+if (isset($_GET['frommail']) && isset($_GET['email']) && !empty($_GET['email']) and isset($_GET['hash']) && !empty($_GET['hash'])) {
+
+
+	try {
+		// first connect to database with the PDO object. 
+		$con = new \PDO("mysql:host=miregau123.mysql.db;dbname=miregau123;charset=utf8", "miregau123", "Putabbdd1", [
+			PDO::ATTR_EMULATE_PREPARES => false,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		]);
+	} catch (\PDOException $e) {
+		// if connection fails, show PDO error. 
+		echo "Error connecting to mysql: " . $e->getMessage();
+	}
 
 	echo "aiuwpbvpiWRUBVÑwrbv";
 

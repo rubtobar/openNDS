@@ -17,6 +17,7 @@ gcc \
 g++ \
 make \
 curl \
+lftp \
 && rm -rf /var/lib/apt/lists/* \
 && npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
 
