@@ -251,7 +251,7 @@ if (isset($_GET['status'])) {
 } else if (isset($_GET['fas'])) {
 	$fas = $_GET['fas'];
 	$iv = $_GET['iv'];
-}elseif (isset($_GET['frommail'])) {
+} elseif (isset($_GET['frommail'])) {
 	# code...
 } else {
 	exit(0);
@@ -569,32 +569,82 @@ function thankyou_page()
 			</div>
 
 			<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
-				<div>
-					<svg class="text-green-600" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-					</svg>
-				</div>
-
-				<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">WSECURITY</h2>
-
-				<p class="text-xl text-center text-gray-600 dark:text-gray-200">Login correcto</p>
-
-
 
 				<?php
-				echo "<form action=\"$me\" method=\"get\">";
-				echo "<input type=\"hidden\" name=\"fas\" value=\"$fas\">";
-				echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
-				echo "<input type=\"hidden\" name=\"auth\" value=\"$auth\">";
-				echo "<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">";
-				echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
+
+				if (true) {
+					# Hemos introducido bien el código de 4 dígitos
+
+
+
 				?>
 
-				<div class="mt-8">
-					<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Conectar">
-					</input>
-				</div>
-				</form>
+					<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">Código de verificación</h2>
+					<p class="text-xl text-center text-gray-600 dark:text-gray-200">Hemos enviado un código de verificación a tu correo, introducelo a continuación.</p>
+					<div class="flex justify-center">
+						<svg class="text-gray-600 h-20 w-20" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+						</svg>
+					</div>
+
+					<?php
+					echo "<form action=\"$me\" method=\"get\">";
+					echo "<input type=\"hidden\" name=\"fas\" value=\"$fas\">";
+					echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
+					echo "<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">";
+					echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
+					
+					?>
+					<div class="text-gray-700">
+						<label class="block mb-1" for="forms-helpTextCode">Código</label>
+						<input name="digits-code" class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="password" id="forms-helpTextCode" aria-describedby="passwordHelp" />
+						<span class="text-xs text-gray-600" id="passwordHelp">Tu código debe contener 4 caracteres.</span>
+					</div>
+
+					<div class="mt-8 justify-items-end">
+						<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Log in">
+						</input>
+					</div>
+					</form>
+				<?php
+				} else {
+					# Hemos introducido bien el código de 4 dígitos
+				?>
+					<div>
+						<svg class="text-green-600" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</div>
+
+
+					<h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white">WSECURITY</h2>
+
+					<p class="text-xl text-center text-gray-600 dark:text-gray-200">Login correcto</p>
+
+
+					<?php
+
+
+
+
+
+					echo "<form action=\"$me\" method=\"get\">";
+					echo "<input type=\"hidden\" name=\"fas\" value=\"$fas\">";
+					echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
+					echo "<input type=\"hidden\" name=\"auth\" value=\"$auth\">";
+					echo "<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">";
+					echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
+
+					?>
+
+					<div class="mt-8">
+						<input type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600" value="Conectar">
+						</input>
+					</div>
+					</form>
+				<?php
+				}
+				?>
 			</div>
 		</div>
 	</body>
@@ -630,7 +680,7 @@ CREATE TABLE `users` (
 		*/
 
 	# creamos el usuario y su hash
-	$hash = md5(rand(0, 1000));
+	$hash = rand(1000, 9999);
 	$password = rand(1000, 5000); // Generate random number between 1000 and 5000 and assign it to a local variable.
 
 	$sentencia = $con->prepare("INSERT INTO users (username, password, email, hash) VALUES (?, ?, ?, ?)");
@@ -654,8 +704,8 @@ CREATE TABLE `users` (
 	Password: ' . $password . '
 	------------------------
 	
-	Please click this link to activate your account:
-	http://miregalooriginal.com/fas-aes-https.php?frommail&email=' . $email . '&hash=' . $hash . '
+	Introduce este código para entrar:
+	Código de activación' . $hash . '
 	'; // Our message above including the link
 
 	$headers = 'From:noreply@miregalooriginal.com' . "\r\n"; // Set from headers
