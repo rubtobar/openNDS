@@ -548,6 +548,7 @@ function thankyou_page()
 	$originurl = $GLOBALS["originurl"];
 	$fullname = $_GET["fullname"];
 	$email = $_GET["email"];
+	$codigo = $_GET["codigo"];
 	$fullname_url = rawurlencode($fullname);
 	$auth = "yes";
 
@@ -571,9 +572,38 @@ function thankyou_page()
 			<div class="w-full px-6 py-8 md:px-8 lg:w-1/2">
 
 				<?php
+				$match = 0;
+				if (isset($_GET["codigo"])) {
+					try {
+						// first connect to database with the PDO object. 
+						$con = new \PDO("mysql:host=miregau123.mysql.db;dbname=miregau123;charset=utf8", "miregau123", "Putabbdd1", [
+							PDO::ATTR_EMULATE_PREPARES => false,
+							PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+						]);
+					} catch (\PDOException $e) {
+						// if connection fails, show PDO error. 
+						echo "Error connecting to mysql: " . $e->getMessage();
+					}
 
-				if (true) {
-					# Hemos introducido bien el código de 4 dígitos
+					$sentencia = $con->prepare("SELECT * FROM users WHERE email=? AND codigo=? ;");
+					$sentencia->bindParam(1, $email);
+					$sentencia->bindParam(2, $codigo);
+					$sentencia->execute();
+					/* obtener valor */
+					$result = $sentencia->fetchAll();
+
+					//print_r($result);
+					echo $result[0]['codigo'];
+					echo count($result);
+					$match  = count($result);
+
+					$sentencia = $con->prepare("UPDATE users SET n_errores_codigo = ? WHERE email=? AND codigo=? ;");
+					$sentencia->bindParam(1, $result[0]['n_errores_codigo']+1);
+					$sentencia->bindParam(2, $email);
+					$sentencia->bindParam(3, $codigo);
+				}
+				if ($match != 1) {
+					# Falta introducir codigo
 
 
 
@@ -593,12 +623,12 @@ function thankyou_page()
 					echo "<input type=\"hidden\" name=\"iv\" value=\"$iv\">";
 					echo "<input type=\"hidden\" name=\"fullname\" value=\"$fullname_url\">";
 					echo "<input type=\"hidden\" name=\"email\" value=\"$email\">";
-					
+
 					?>
 					<div class="text-gray-700">
 						<label class="block mb-1" for="forms-helpTextCode">Código</label>
-						<input name="digits-code" class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="password" id="forms-helpTextCode" aria-describedby="passwordHelp" />
-						<span class="text-xs text-gray-600" id="passwordHelp">Tu código debe contener 4 caracteres.</span>
+						<input name="codigo" class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="password" id="forms-helpTextCode" aria-describedby="passwordHelp" />
+						<span class="text-xs text-gray-600" id="passwordHelp">Tu código debe contener 6 caracteres.</span>
 					</div>
 
 					<div class="mt-8 justify-items-end">
@@ -608,7 +638,28 @@ function thankyou_page()
 					</form>
 				<?php
 				} else {
-					# Hemos introducido bien el código de 4 dígitos
+					# Hemos introducido bien el código de 6 dígitos
+					
+					try {
+						// first connect to database with the PDO object. 
+						$con = new \PDO("mysql:host=miregau123.mysql.db;dbname=miregau123;charset=utf8", "miregau123", "Putabbdd1", [
+							PDO::ATTR_EMULATE_PREPARES => false,
+							PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+						]);
+					} catch (\PDOException $e) {
+						// if connection fails, show PDO error. 
+						echo "Error connecting to mysql: " . $e->getMessage();
+					}
+					$zero = 0;
+					$zero2 = 0;
+					$active = 1;
+					$sentencia = $con->prepare("UPDATE users SET codigo = ?, active = ?, n_errores_codigo = ? WHERE email = ? ;");
+					$sentencia->bindParam(1, $zero2);
+					$sentencia->bindParam(2, $active);
+					$sentencia->bindParam(3, $zero);
+					$sentencia->bindParam(4, $email);
+					$sentencia->execute();
+
 				?>
 					<div>
 						<svg class="text-green-600" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -655,7 +706,7 @@ function thankyou_page()
 	<?php
 
 
-
+	# TODO Aqui ejecutamos dos veces, hay que ejecutar esta parte solo si la variable codigo no esta en el GET
 	# El login ha sido correcto, guardamos al usuario en la bbdd
 	try {
 		// first connect to database with the PDO object. 
@@ -668,45 +719,47 @@ function thankyou_page()
 		echo "Error connecting to mysql: " . $e->getMessage();
 	}
 
+	$sentencia = $con->prepare("SELECT * FROM users WHERE email=? ;");
+	$sentencia->bindParam(1, $email);
+	$sentencia->execute();
+	/* obtener valor */
+	$result = $sentencia->fetchAll();
+
+	if (count($result) == 0) {
+		
+		$sentencia = $con->prepare("INSERT INTO users (username, email, codigo) VALUES (?, ?, ?)");
+		$a = 0;
+		$sentencia->bindParam(1, $fullname);
+		$sentencia->bindParam(2, $email);
+		$sentencia->bindParam(3, $a);
+		
+		$sentencia->execute();
+	}
+	
 	/* 
 CREATE TABLE `users` (
-`id` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`email` VARCHAR( 100 ) NOT NULL PRIMARY KEY,
 `username` VARCHAR( 32 ) NOT NULL ,
-`password` VARCHAR( 60 ) NOT NULL ,
-`email` TEXT NOT NULL ,
-`hash` VARCHAR( 32 ) NOT NULL ,
-`active` INT( 1 ) NOT NULL DEFAULT '0'
+`codigo` VARCHAR( 32 ) NULL,
+`active` INT( 1 ) NOT NULL DEFAULT '0',
+`n_errores_codigo` INT(8) NOT NULL DEFAULT '0'
 ) ENGINE = MYISAM ; 
 		*/
 
 	# creamos el usuario y su hash
-	$hash = rand(1000, 9999);
-	$password = rand(1000, 5000); // Generate random number between 1000 and 5000 and assign it to a local variable.
+	echo "asdfghjkl";
+	$codigo = rand(100000, 999999);
 
-	$sentencia = $con->prepare("INSERT INTO users (username, password, email, hash) VALUES (?, ?, ?, ?)");
-	$sentencia->bindParam(1, $fullname);
-	$sentencia->bindParam(2, password_hash($password, PASSWORD_DEFAULT));
-	$sentencia->bindParam(3, $email);
-	$sentencia->bindParam(4, $hash);
+	$sentencia = $con->prepare("UPDATE users SET codigo = ? WHERE email = ? ;");
+	$sentencia->bindParam(1, $codigo);
+	$sentencia->bindParam(2, $email);
 	$sentencia->execute();
 
 	// Enviamos codigo de verificación
 
 	$to      = $email; // Send email to our user
 	$subject = 'Signup | Verification'; // Give the email a subject 
-	$message = '
-  
-	Thanks for signing up!
-	Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
-	
-	------------------------
-	Username: ' . $fullname . '
-	Password: ' . $password . '
-	------------------------
-	
-	Introduce este código para entrar:
-	Código de activación' . $hash . '
-	'; // Our message above including the link
+	$message = 'Código de activación: ' . $codigo; // Our message above including the link
 
 	$headers = 'From:noreply@miregalooriginal.com' . "\r\n"; // Set from headers
 
@@ -1276,16 +1329,16 @@ if (isset($_GET['frommail']) && isset($_GET['email']) && !empty($_GET['email']) 
 
 	// Verify data
 	$email = mysqli_escape_string($con, $_GET['email']); // Set email variable
-	$hash = mysqli_escape_string($con, $_GET['hash']); // Set hash variable
+	$codigo = mysqli_escape_string($con, $_GET['hash']); // Set hash variable
 
-	$search = mysqli_query($con, "SELECT email, hash, active FROM users WHERE email='" . $email . "' AND hash='" . $hash . "' AND active='0'");
+	$search = mysqli_query($con, "SELECT email, hash, active FROM users WHERE email='" . $email . "' AND hash='" . $codigo . "' AND active='0'");
 	$match  = mysqli_num_rows($search);
 
 	echo $match; // Display how many matches have been found -> remove this when done with testing ;)
 
 	if ($match > 0) {
 		// We have a match, activate the account
-		mysqli_query($con, "UPDATE users SET active='1' WHERE email='" . $email . "' AND hash='" . $hash . "' AND active='0'");
+		mysqli_query($con, "UPDATE users SET active='1' WHERE email='" . $email . "' AND hash='" . $codigo . "' AND active='0'");
 		echo '<div class="statusmsg">Your account has been activated, you can now login</div>';
 	} else {
 		// No match -> invalid url or account has already been activated.
