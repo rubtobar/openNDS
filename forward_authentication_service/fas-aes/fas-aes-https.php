@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 /* $roots_includes = array(
 	'/functions/body-class.php',
@@ -597,14 +600,18 @@ function thankyou_page()
 					echo count($result);
 					$match  = count($result);
 
+					$intents = $result[0]['n_errores_codigo'] + 1;
 					$sentencia = $con->prepare("UPDATE users SET n_errores_codigo = ? WHERE email=? AND codigo=? ;");
-					$sentencia->bindParam(1, $result[0]['n_errores_codigo']+1);
+					$sentencia->bindParam(1, $intents);
 					$sentencia->bindParam(2, $email);
 					$sentencia->bindParam(3, $codigo);
 				}
+
+				echo "asd\n";
+
 				if ($match != 1) {
 					# Falta introducir codigo
-
+					echo "falta codigo";
 
 
 				?>
@@ -638,8 +645,9 @@ function thankyou_page()
 					</form>
 				<?php
 				} else {
+					echo "codigo correcto";
 					# Hemos introducido bien el código de 6 dígitos
-					
+
 					try {
 						// first connect to database with the PDO object. 
 						$con = new \PDO("mysql:host=miregau123.mysql.db;dbname=miregau123;charset=utf8", "miregau123", "Putabbdd1", [
@@ -694,6 +702,7 @@ function thankyou_page()
 					</div>
 					</form>
 				<?php
+				flush();
 				}
 				?>
 			</div>
@@ -726,16 +735,16 @@ function thankyou_page()
 	$result = $sentencia->fetchAll();
 
 	if (count($result) == 0) {
-		
+
 		$sentencia = $con->prepare("INSERT INTO users (username, email, codigo) VALUES (?, ?, ?)");
 		$a = 0;
 		$sentencia->bindParam(1, $fullname);
 		$sentencia->bindParam(2, $email);
 		$sentencia->bindParam(3, $a);
-		
+
 		$sentencia->execute();
 	}
-	
+
 	/* 
 CREATE TABLE `users` (
 `email` VARCHAR( 100 ) NOT NULL PRIMARY KEY,
@@ -745,31 +754,32 @@ CREATE TABLE `users` (
 `n_errores_codigo` INT(8) NOT NULL DEFAULT '0'
 ) ENGINE = MYISAM ; 
 		*/
+	if (!isset($_GET["codigo"])) {
+		# creamos el usuario y su hash
+		echo "asdfghjkl";
+		$codigo = rand(100000, 999999);
 
-	# creamos el usuario y su hash
-	echo "asdfghjkl";
-	$codigo = rand(100000, 999999);
+		$sentencia = $con->prepare("UPDATE users SET codigo = ? WHERE email = ? ;");
+		$sentencia->bindParam(1, $codigo);
+		$sentencia->bindParam(2, $email);
+		$sentencia->execute();
 
-	$sentencia = $con->prepare("UPDATE users SET codigo = ? WHERE email = ? ;");
-	$sentencia->bindParam(1, $codigo);
-	$sentencia->bindParam(2, $email);
-	$sentencia->execute();
+		// Enviamos codigo de verificación
 
-	// Enviamos codigo de verificación
+		$to      = $email; // Send email to our user
+		$subject = 'Signup | Verification'; // Give the email a subject 
+		$message = 'Código de activación: ' . $codigo; // Our message above including the link
 
-	$to      = $email; // Send email to our user
-	$subject = 'Signup | Verification'; // Give the email a subject 
-	$message = 'Código de activación: ' . $codigo; // Our message above including the link
+		$headers = 'From:noreply@miregalooriginal.com' . "\r\n"; // Set from headers
 
-	$headers = 'From:noreply@miregalooriginal.com' . "\r\n"; // Set from headers
+		if (mail($to, $subject, $message, $headers)) { // Send our email
+			echo "enviado";
+		} else {
+			echo "no enviado";
+		}
 
-	if (mail($to, $subject, $message, $headers)) { // Send our email
-		echo "enviado";
-	} else {
-		echo "no enviado";
+		flush();
 	}
-
-	flush();
 }
 
 function write_log()
